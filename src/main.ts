@@ -2,14 +2,21 @@ import {Player} from "./Player";
 
 console.log('Hello World From PixelPigeon!');
 
+const canvasWidth = 1200;
+const canvasHeight = 400;
+const backgroundColor = '#111';
+const playerWidth = 50;
+const playerHeight = 70;
+const playerColor = '#e40';
+
 const container = document.getElementById('game-container');
 if (!container) {
     throw new Error('No game-container');
 }
 
 const canvas = document.createElement('canvas');
-canvas.width = 1200;
-canvas.height = 400;
+canvas.width = canvasWidth;
+canvas.height = canvasHeight;
 container.appendChild(canvas);
 
 const ctx = canvas.getContext('2d');
@@ -18,9 +25,23 @@ if (!ctx) {
 }
 
 
-const player = new Player(ctx, 30, undefined, 50, 70, '#e40');
+const player = new Player(ctx, 30, undefined, playerWidth, playerHeight, playerColor);
 
 let lastTime = 0;
+
+function renderGame(ctx: CanvasRenderingContext2D) {
+    // set background color
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    player.draw();
+}
+
+function updateGame(deltaTime: number) {
+    // console.log('updateGame', deltaTime);
+    player.update(deltaTime);
+
+}
 
 function gameLoop(time: number) {
     const deltaTime = time - lastTime;
@@ -35,20 +56,6 @@ function gameLoop(time: number) {
     renderGame(ctx!);
 
     requestAnimationFrame(gameLoop);
-}
-
-function updateGame(deltaTime: number) {
-    // console.log('updateGame', deltaTime);
-    player.update(deltaTime);
-
-}
-
-function renderGame(ctx: CanvasRenderingContext2D) {
-    // set background color
-    ctx.fillStyle = '#111'
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    player.draw();
 }
 
 requestAnimationFrame(gameLoop);
