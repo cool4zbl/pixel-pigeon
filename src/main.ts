@@ -1,13 +1,10 @@
 import {Player} from "./Player";
+import {Milestone} from "./Milestone";
+import {backgroundColor, backgroundSpeed, canvasHeight, playerHeight, playerWidth} from "./consts";
 
 console.log('Hello World From PixelPigeon!');
 
 const canvasWidth = 1200;
-const canvasHeight = 300;
-const backgroundColor = '#111';
-const playerWidth = 50;
-const playerHeight = 70;
-const playerColor = '#e40';
 
 const container = document.getElementById('game-container');
 if (!container) {
@@ -26,18 +23,7 @@ if (!ctx) {
 
 const backgroundImage = new Image();
 backgroundImage.src = 'assets/bg-new.png';
-
 let backgroundX = 0
-const backgroundSpeed = 0.2
-
-const player = new Player(ctx, 30, undefined, playerWidth, playerHeight, playerColor);
-
-window.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.code === 'Space') {
-        player.jump();
-    }
-})
-
 
 function drawBackground(ctx: CanvasRenderingContext2D, deltaTime: number) {
     backgroundX -= backgroundSpeed * deltaTime;
@@ -52,6 +38,24 @@ function drawBackground(ctx: CanvasRenderingContext2D, deltaTime: number) {
     ctx.drawImage(backgroundImage, backgroundX + canvas.width, 0, canvas.width, canvas.height);
 }
 
+const player = new Player(ctx, 30, undefined, playerWidth, playerHeight);
+
+window.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.code === 'Space') {
+        player.jump();
+    }
+})
+
+// milestones
+const milestones: Milestone[] = []
+const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#4e5')
+milestones.push(milestone);
+
+setTimeout(() => {
+    const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#45e')
+    milestones.push(milestone);
+}, 5000)
+
 function renderGame(ctx: CanvasRenderingContext2D, deltaTime: number) {
     // set background color
     ctx.fillStyle = backgroundColor;
@@ -62,11 +66,12 @@ function renderGame(ctx: CanvasRenderingContext2D, deltaTime: number) {
     }
 
     player.draw();
+    milestones.forEach(milestone => milestone.draw());
 }
 
 function updateGame(deltaTime: number) {
     player.update(deltaTime);
-
+    milestones.forEach(milestone => milestone.update(deltaTime));
 }
 
 let lastTime = 0;

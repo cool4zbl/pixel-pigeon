@@ -3,7 +3,8 @@ interface IPlayer {
     y: number;
     width: number;
     height: number;
-    color: string;
+    color?: string;
+    avatar?: string;
 
     jump(): void;
 
@@ -18,6 +19,7 @@ export class Player implements IPlayer {
     width: number;
     height: number;
     color: string;
+    avatar: string;
 
     #isJumping = false;
     #velocityY = 0;
@@ -29,15 +31,18 @@ export class Player implements IPlayer {
         private ctx: CanvasRenderingContext2D,
         x: number | undefined = 30,
         y: number | undefined,
-        width = 50,
-        height = 70,
-        color = '#e40'
+        width = 80,
+        height = 80,
+        color: string | undefined = '#e40',
+        avatar: string | undefined = './assets/player.png'
     ) {
         this.x = x;
         this.y = typeof y === 'number' ? y : ctx.canvas.height - height - 30;
         this.width = width;
         this.height = height;
         this.color = color;
+
+        this.avatar = avatar;
 
         this.#groundY = this.y;
     }
@@ -74,5 +79,10 @@ export class Player implements IPlayer {
     draw() {
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        // draw image
+        const avatar = new Image()
+        avatar.src = this.avatar
+        this.ctx.drawImage(avatar, this.x, this.y, this.width, this.height)
     }
 }
