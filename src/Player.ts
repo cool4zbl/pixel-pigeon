@@ -5,6 +5,8 @@ interface IPlayer {
     height: number;
     color: string;
 
+    jump(): void;
+
     update(deltaTime: number): void;
 
     draw(): void;
@@ -16,6 +18,12 @@ export class Player implements IPlayer {
     width: number;
     height: number;
     color: string;
+
+    #isJumping = false;
+    #velocityY = 0;
+    #gravity = 1700;
+    #jumpForce = -600;
+    readonly #groundY: number;
 
     constructor(
         private ctx: CanvasRenderingContext2D,
@@ -30,10 +38,36 @@ export class Player implements IPlayer {
         this.width = width;
         this.height = height;
         this.color = color;
+
+        this.#groundY = this.y;
+    }
+
+    jump() {
+        // comment out the following line to allow multiple jumps
+        // if (this.#isJumping) return
+
+        this.#isJumping = true
+        this.#velocityY = this.#jumpForce
     }
 
     update(deltaTime: number) {
-        // TODO: move player based on input
+        const dt = deltaTime / 1000
+
+        if (this.#isJumping) {
+            this.#velocityY += this.#gravity * dt
+            this.y += this.#velocityY * dt
+
+            // check if player is on the ground
+            if (this.y >= this.#groundY) {
+                this.y = this.#groundY
+                this.#isJumping = false
+                this.#velocityY = 0
+            }
+            if (this.y <= 0) {
+                this.y = 0
+                this.#velocityY = 0
+            }
+        }
 
     }
 
