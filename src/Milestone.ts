@@ -1,4 +1,4 @@
-import {backgroundSpeed} from "./consts";
+import { backgroundSpeed } from "./consts";
 
 interface IMilestone {
     x: number;

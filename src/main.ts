@@ -1,6 +1,6 @@
-import {Player} from "./Player";
-import {Milestone} from "./Milestone";
-import {backgroundColor, backgroundSpeed, canvasHeight, playerHeight, playerWidth} from "./consts";
+import { Player } from "./Player";
+import { Milestone } from "./Milestone";
+import { backgroundColor, backgroundSpeed, canvasHeight, playerHeight, playerWidth } from "./consts";
 
 console.log('Hello World From PixelPigeon!');
 
