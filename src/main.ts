@@ -1,6 +1,7 @@
 import { Player } from "./Player";
 import { Milestone } from "./Milestone";
 import { backgroundColor, backgroundSpeed, canvasHeight, playerHeight, playerWidth } from "./consts";
+import { isColliding } from "./utils";
 
 console.log('Hello World From PixelPigeon!');
 
@@ -48,31 +49,18 @@ window.addEventListener('keydown', (e: KeyboardEvent) => {
 
 // milestones
 const milestones: Milestone[] = []
-const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#4e5')
+const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#4e5', 10)
 milestones.push(milestone);
 
 setTimeout(() => {
-    const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#45e')
+    const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#45e', 20)
     milestones.push(milestone);
 }, 5000)
 
-function renderGame(ctx: CanvasRenderingContext2D, deltaTime: number) {
-    // set background color
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    if (backgroundImage.complete) {
-        drawBackground(ctx, deltaTime)
-    }
-
-    player.draw();
-    milestones.forEach(milestone => milestone.draw());
-}
-
-function updateGame(deltaTime: number) {
-    player.update(deltaTime);
-    milestones.forEach(milestone => milestone.update(deltaTime));
-}
+setTimeout(() => {
+    const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#5f4', 30)
+    milestones.push(milestone);
+}, 10000)
 
 let lastTime = 0;
 
@@ -81,10 +69,29 @@ function gameLoop(time: number) {
     lastTime = time;
 
     ctx!.clearRect(0, 0, canvas.width, canvas.height);
+    // set background color
+    ctx!.fillStyle = backgroundColor;
+    ctx!.fillRect(0, 0, canvas.width, canvas.height);
+    // Draw scrolling background here if applicable
+    if (backgroundImage.complete) {
+        drawBackground(ctx!, deltaTime)
+    }
 
-    renderGame(ctx!, deltaTime);
+    // Update and draw player
+    player.update(deltaTime);
+    player.draw();
 
-    updateGame(deltaTime);
+    for (let i = 0; i < milestones.length; i++) {
+        milestones[i].update(deltaTime);
+        milestones[i].draw();
+
+        if (isColliding(player, milestones[i])) {
+            player.addCoins(milestones[i].coins);
+            milestones[i].destroy();
+            milestones.splice(i, 1);
+            i--;
+        }
+    }
 
     requestAnimationFrame(gameLoop);
 }
