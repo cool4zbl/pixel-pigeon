@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pixel Images</title>
+    <!--    <link rel="stylesheet" href="/styles.css" />-->
+</head>
+<body>
+<canvas id="canvas" width="200" height="200"></canvas>
+<script>
+    const img = new Image();
+    img.src = '../assets/pixelated_player.jpg';
+    img.onload = () => {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Draw small version
+        const pixelSize = 10;
+        ctx.drawImage(img, 0, 0, canvas.width / pixelSize, canvas.height / pixelSize);
+
+        // Stretch it back without smoothing
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(canvas, 0, 0, canvas.width / pixelSize, canvas.height / pixelSize, 0, 0, canvas.width, canvas.height);
+    };
+</script>
+</body>

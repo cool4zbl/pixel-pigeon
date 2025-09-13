@@ -1,13 +1,11 @@
-import {Player} from "./Player";
+import { Player } from "./Player";
+import { Milestone } from "./Milestone";
+import { backgroundColor, backgroundSpeed, canvasHeight, playerHeight, playerWidth } from "./consts";
+import { isColliding } from "./utils";
 
 console.log('Hello World From PixelPigeon!');
 
 const canvasWidth = 1200;
-const canvasHeight = 300;
-const backgroundColor = '#111';
-const playerWidth = 50;
-const playerHeight = 70;
-const playerColor = '#e40';
 
 const container = document.getElementById('game-container');
 if (!container) {
@@ -26,18 +24,7 @@ if (!ctx) {
 
 const backgroundImage = new Image();
 backgroundImage.src = 'assets/bg-new.png';
-
 let backgroundX = 0
-const backgroundSpeed = 0.2
-
-const player = new Player(ctx, 30, undefined, playerWidth, playerHeight, playerColor);
-
-window.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.code === 'Space') {
-        player.jump();
-    }
-})
-
 
 function drawBackground(ctx: CanvasRenderingContext2D, deltaTime: number) {
     backgroundX -= backgroundSpeed * deltaTime;
@@ -52,22 +39,28 @@ function drawBackground(ctx: CanvasRenderingContext2D, deltaTime: number) {
     ctx.drawImage(backgroundImage, backgroundX + canvas.width, 0, canvas.width, canvas.height);
 }
 
-function renderGame(ctx: CanvasRenderingContext2D, deltaTime: number) {
-    // set background color
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+const player = new Player(ctx, 30, undefined, playerWidth, playerHeight);
 
-    if (backgroundImage.complete) {
-        drawBackground(ctx, deltaTime)
+window.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.code === 'Space') {
+        player.jump();
     }
+})
 
-    player.draw();
-}
+// milestones
+const milestones: Milestone[] = []
+const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#4e5', 10)
+milestones.push(milestone);
 
-function updateGame(deltaTime: number) {
-    player.update(deltaTime);
+setTimeout(() => {
+    const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#45e', 20)
+    milestones.push(milestone);
+}, 5000)
 
-}
+setTimeout(() => {
+    const milestone = new Milestone(ctx, undefined, undefined, 50, 50, '#5f4', 30)
+    milestones.push(milestone);
+}, 10000)
 
 let lastTime = 0;
 
@@ -76,10 +69,29 @@ function gameLoop(time: number) {
     lastTime = time;
 
     ctx!.clearRect(0, 0, canvas.width, canvas.height);
+    // set background color
+    ctx!.fillStyle = backgroundColor;
+    ctx!.fillRect(0, 0, canvas.width, canvas.height);
+    // Draw scrolling background here if applicable
+    if (backgroundImage.complete) {
+        drawBackground(ctx!, deltaTime)
+    }
 
-    renderGame(ctx!, deltaTime);
+    // Update and draw player
+    player.update(deltaTime);
+    player.draw();
 
-    updateGame(deltaTime);
+    for (let i = 0; i < milestones.length; i++) {
+        milestones[i].update(deltaTime);
+        milestones[i].draw();
+
+        if (isColliding(player, milestones[i])) {
+            player.addCoins(milestones[i].coins);
+            milestones[i].destroy();
+            milestones.splice(i, 1);
+            i--;
+        }
+    }
 
     requestAnimationFrame(gameLoop);
 }
